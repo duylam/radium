@@ -183,21 +183,39 @@ const _runPlugins = function({
 
   const getKey = _buildGetKey(renderedElement, existingKeyMap);
 
+  const addCSS = css => {
+    if (!component.context._radiumStyleKeeper) {
+      throw new Error(
+        'To use keyframes, please add `isRoot: true` to your root ' +
+          'component\'s Radium config.',
+      );
+    }
+
+    return component.context._radiumStyleKeeper.addCSS(css);
+  };
+  const componentName = component.constructor.displayName ||
+    component.constructor.name;
+  const getComponentField = key => component[key];
+  const getGlobalState = key => globalState[key];
+  const getStateLocal = (stateKey, elementKey) =>
+    getState(component.state, elementKey || getKey(), stateKey);
+  const setState = (stateKey, value, elementKey) =>
+    _setStyleState(component, elementKey || getKey(), stateKey, value);
+
   let newStyle = props.style;
+
   plugins.forEach(plugin => {
     const result = plugin({
       ExecutionEnvironment,
-      componentName: component.constructor.displayName ||
-        component.constructor.name,
+      addCSS,
+      componentName,
       config,
-      getComponentField: key => component[key],
-      getGlobalState: key => globalState[key],
-      getState: (stateKey, elementKey) =>
-        getState(component.state, elementKey || getKey(), stateKey),
+      getComponentField,
+      getGlobalState,
+      getState: getStateLocal,
       mergeStyles,
       props: newProps,
-      setState: (stateKey, value, elementKey) =>
-        _setStyleState(component, elementKey || getKey(), stateKey, value),
+      setState,
       style: newStyle
     }) || {};
 
