@@ -25,7 +25,8 @@ const buildCssString = function(
 const Style = React.createClass({
   propTypes: {
     rules: React.PropTypes.object,
-    scopeSelector: React.PropTypes.string
+    scopeSelector: React.PropTypes.string,
+    scoped: React.PropTypes.bool
   },
 
   contextTypes: {
@@ -34,7 +35,8 @@ const Style = React.createClass({
 
   getDefaultProps(): {scopeSelector: string} {
     return {
-      scopeSelector: ''
+      scopeSelector: '',
+      scoped: false
     };
   },
 
@@ -99,7 +101,7 @@ const Style = React.createClass({
     const styles = this._buildStyles(this.props.rules);
 
     return (
-      <style dangerouslySetInnerHTML={{__html: styles}} />
+      <style scoped={this.props.scoped} dangerouslySetInnerHTML={{__html: styles}} />
     );
   }
 });
